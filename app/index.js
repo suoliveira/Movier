@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, FlatList, Image, StyleSheet, ActivityIndicator } from 'react-native';
-import { searchMovies } from './services/api.js'; // ajuste o caminho
+import { View, Text, TextInput, FlatList, Image, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { searchMovies } from '../services/api.js'; 
+import { useRouter } from 'expo-router';
+import { TouchableOpacity } from 'react-native';
 
 const MovieListScreen = () => {
-  const [searchTerm, setSearchTerm] = useState('batman');
+  const [searchTerm, setSearchTerm] = useState('Batman');
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
 
   const fetchMovies = async () => {
@@ -19,32 +22,29 @@ const MovieListScreen = () => {
 
       setMovies(results || []);
     } catch (error) {
-      setMovies([])
+      setMovies([]);
       setError(error.message || 'Não foi possível carregar os filmes');
       Alert.alert('Erro', error.message || 'Não foi possível carregar os filmes');
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
 
   useEffect(() => {
-    fetchMovies()
-  }, [])
-
+    fetchMovies();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Filmes</Text>
-
-      <TextInput
-        style={styles.input}
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-        onSubmitEditing={fetchMovies}
-        placeholder="Buscar filmes..."
-      />
-
+      <Text style={styles.title}>Movier</Text>
+        <TextInput
+          style={styles.input}
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          onSubmitEditing={fetchMovies}
+          placeholder="Buscar filmes..."
+          placeholderTextColor="#888"
+        />
       {loading && <ActivityIndicator size="large" color="#333" />}
       {error && <Text style={styles.error}>{error}</Text>}
 
@@ -52,16 +52,18 @@ const MovieListScreen = () => {
         data={movies}
         keyExtractor={(item) => item.imdbID}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image
-              source={{ uri: item.Poster !== 'N/A' ? item.Poster : 'https://via.placeholder.com/100x150' }}
-              style={styles.poster}
-            />
-            <View style={styles.info}>
-              <Text style={styles.movieTitle}>{item.Title}</Text>
-              <Text style={styles.movieYear}>{item.Year}</Text>
+          <TouchableOpacity onPress={() => router.push(`/info?id=${item.imdbID}`)}>
+            <View style={styles.card}>
+              <Image
+                source={{ uri: item.Poster !== 'N/A' ? item.Poster : 'https://via.placeholder.com/100x150' }}
+                style={styles.poster}
+              />
+              <View style={styles.info}>
+                <Text style={styles.movieTitle}>{item.Title}</Text>
+                <Text style={styles.movieYear}>{item.Year}</Text>
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
     </View>
@@ -80,7 +82,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 12
+    marginBottom: 12,
+    textAlign: 'center',
+    color: '#A458C8',
   },
   input: {
     borderWidth: 1,
@@ -117,4 +121,5 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 4
   }
+  
 });
