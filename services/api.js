@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Substitua 'YOUR_API_KEY' pela sua chave de API real
-const API_KEY = 'c8c047da';
+const API_KEY = 'YOUR_API_KEY';
 const BASE_URL = 'https://www.omdbapi.com/';
 
 // Criar instância do axios com configurações padrão
